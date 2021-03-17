@@ -16,7 +16,7 @@ class FPSQueue : public QQueue<T>
 {
 public:
     unsigned int counter;
-    FPSQueue();
+    FPSQueue() : counter() {}
     void push(const T& entry)
     {
         QMutexLocker lock(mutex);

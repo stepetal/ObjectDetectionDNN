@@ -28,14 +28,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     opencvmanager.cpp \
-    fpsqueue.cpp \
     deepneuralnetwormanager.cpp
 
 HEADERS += \
         mainwindow.h \
     opencvmanager.h \
     fpsqueue.h \
-    deepneuralnetwormanager.h
+    deepneuralnetwormanager.h \
+    globals.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -59,6 +59,16 @@ else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -
 
 win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_imgcodecs450
 else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_imgcodecs450d
+
+win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_dnn450
+else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_dnn450d
+
+win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_videoio450
+else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_videoio450d
+
+win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_video450
+else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_video450d
+
 
 INCLUDEPATH += F:/OpenCV/opencv/include
 DEPENDPATH += F:/OpenCV/opencv/include
