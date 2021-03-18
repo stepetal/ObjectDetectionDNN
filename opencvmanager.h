@@ -21,22 +21,41 @@
  * этих фреймов из очереди
  */
 
-class QueueWriter : public QObject
+class QueueWorker : public QObject
 {
     Q_OBJECT
     bool process;
 public:
-    QueueWriter() : process(true) {}
-public slots:
-    void writeToQueue(cv::VideoCapture *cap, FPSQueue<cv::Mat> *framesQueue);
+    QueueWorker() : process(true) {}
     void stopProcessLoop()
     {
-        qDebug() << "stop capturing frames";
+        qDebug() << "stop handling frames";
         process = false;
     }
+    bool isInProcessState(){return process;}
+    void setProcessState(bool pr){process = pr;}
 signals:
     void terminateThread();
     void resultReady(const QString &result);
+};
+
+class QueueWriter : public QueueWorker
+{
+    Q_OBJECT
+public:
+    QueueWriter() : QueueWorker() {}
+public slots:
+    void writeToQueue(cv::VideoCapture *cap, FPSQueue<cv::Mat> *framesQueue);
+
+};
+
+class QueueReader : public QueueWorker
+{
+    Q_OBJECT
+public:
+    QueueReader() : QueueWorker() {}
+public slots:
+    void readFromQueue(FPSQueue<cv::Mat> *framesQueue);
 };
 
 /*
@@ -52,6 +71,9 @@ class OpenCVManager : public QObject
 
     QueueWriter *queueWriter;//объект по записи в очередь фреймов
     QThread queueWriterThread;//отдельный поток для объекта по записи в очередь фреймов
+    QueueReader *queueReader;//объект по чтению фреймов из очереди
+    QThread queueReaderThread;//отдельный поток для объета по чтению фреймов из очереди
+
     bool process; //true, если выполняется обработка очередного фрейма
 public:
     OpenCVManager(QSharedPointer<DeepNeuralNetworManager> dnn);
@@ -65,8 +87,10 @@ public:
     void releaseResources();
 public slots:
     void handleQueueWriterResult(const QString &result);
+    void handleQueueReaderResult(const QString &result);
 signals:
     void startQueueWriterThread(cv::VideoCapture *cap, FPSQueue<cv::Mat> *framesQueue);
+    void startQueueReaderThread(FPSQueue<cv::Mat> *framesQueue);
     void stopWritingProcedure();
 };
 
