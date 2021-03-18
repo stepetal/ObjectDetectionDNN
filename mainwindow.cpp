@@ -1,9 +1,10 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),deepNeuralNetworkManager(new DeepNeuralNetworManager()),openCVManager(new OpenCVManager())
+    : QMainWindow(parent),
+      deepNeuralNetworkManager(new DeepNeuralNetworManager()),
+      openCVManager(new OpenCVManager(deepNeuralNetworkManager))
 {
-
     createWidgets();
     createLayout();
     createConnections();
@@ -60,6 +61,7 @@ void MainWindow::createLayout()
     QHBoxLayout *buttonWidgetLayout = new QHBoxLayout();
     buttonWidgetLayout->addStretch();
     buttonWidgetLayout->addWidget(startDetectionPushButton);
+    buttonWidgetLayout->addWidget(stopDetectionPushButton);
     buttonWidgetLayout->addStretch();
     buttonWidget->setLayout(buttonWidgetLayout);
 
@@ -108,6 +110,13 @@ void MainWindow::createConnections()
     {
         initNeuralNetwork();
         initCaptureDevice();
+        openCVManager->createOpenCVWindow();
+        openCVManager->processVideoFrames();
+    });
+
+    connect(stopDetectionPushButton,&QPushButton::clicked,[&]()
+    {
+        openCVManager->stopCapturingFrames();
     });
 
 }
@@ -118,6 +127,7 @@ void MainWindow::createWidgets()
     chooseModelFilePushButton = new QPushButton("Выбрать");
     openVideoFilePushButton = new QPushButton("Открыть");
     startDetectionPushButton = new QPushButton("Начать обнаружение");
+    stopDetectionPushButton = new QPushButton("Прекратить обнаружение");
     modelFilePathLineEdit = new QLineEdit();
     modelFilePathLineEdit->setReadOnly(true);
     modelFilePathLineEdit->setPlaceholderText("Путь к файлу с параметрами модели");
@@ -184,3 +194,9 @@ void MainWindow::initCaptureDevice()
 }
 
 
+
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+     openCVManager->releaseResources();
+}

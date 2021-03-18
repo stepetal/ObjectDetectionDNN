@@ -12,6 +12,7 @@
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QPointer>
+#include <QScopedPointer>
 #include <QLabel>
 #include <QDebug>
 
@@ -25,6 +26,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
     QPushButton *startDetectionPushButton;
+    QPushButton *stopDetectionPushButton;
     QPushButton *chooseModelFilePushButton;
     QPushButton *chooseConfigureFilePushButton;
     QPushButton *openVideoFilePushButton;
@@ -37,8 +39,8 @@ class MainWindow : public QMainWindow
     QGroupBox *webCamGroupBox;
     QGroupBox *videoFileGroupBox;
 
-    QPointer<OpenCVManager> openCVManager;
-    QPointer<DeepNeuralNetworManager> deepNeuralNetworkManager;
+    QScopedPointer<OpenCVManager> openCVManager;
+    QSharedPointer<DeepNeuralNetworManager> deepNeuralNetworkManager;
 
 public:
     MainWindow(QWidget *parent = 0);
@@ -49,6 +51,10 @@ public:
     void initCaptureDevice();
 
     ~MainWindow();
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // MAINWINDOW_H

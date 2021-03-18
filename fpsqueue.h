@@ -19,7 +19,7 @@ public:
     FPSQueue() : counter() {}
     void push(const T& entry)
     {
-        QMutexLocker lock(mutex);
+        QMutexLocker lock(&mutex);
         QQueue::push_back(entry);
         counter++;
         if (counter == 1)
@@ -31,7 +31,7 @@ public:
 
     T get()
     {
-        QMutexLocker lock(mutex);
+        QMutexLocker lock(&mutex);
         if(!isEmpty())
         {
             T entry = front();
@@ -50,7 +50,7 @@ public:
 
     void clear()
     {
-        QMutexLocker lock(mutex);
+        QMutexLocker lock(&mutex);
         while(!isEmpty())
         {
             pop_front();
@@ -59,7 +59,7 @@ public:
 private:
     cv::TickMeter tick_meter;
     QMutex mutex;
-}
+};
 
 
 #endif // FPSQUEUE_H
