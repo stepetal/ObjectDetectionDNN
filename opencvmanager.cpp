@@ -1,15 +1,16 @@
 #include "opencvmanager.h"
 
 
-OpenCVManager::OpenCVManager(QSharedPointer<DeepNeuralNetworManager> dnn) : videoCapture(cv::VideoCapture()),
-                                                                            deepNetworkManager(dnn),
-                                                                            queueWriter(new QueueWriter()),
-                                                                            queueReader(new QueueReader()),
-                                                                            process(false)
+OpenCVManager::OpenCVManager() : videoCapture(cv::VideoCapture()),
+
+                                queueWriter(new QueueWriter()),
+                                queueReader(new QueueReader()),
+                                process(false)
 {
     createConnections();
     qRegisterMetaType<cv::VideoCapture*>("VideoCapture");
     qRegisterMetaType<FPSQueue<cv::Mat>*>("FPSQueue");
+    qRegisterMetaType<QSharedPointer<DeepNeuralNetworManager>>("DNNManager");
 
 }
 
@@ -82,16 +83,7 @@ void OpenCVManager::processVideoFrames()
     queueWriterThread.start();
     queueReaderThread.start();
     emit startQueueWriterThread(&videoCapture,&framesQueue);
-    emit startQueueReaderThread(&framesQueue);
-//    while(cv::waitKey(0))
-//    {
-//        //some work
-//        QEventLoop evLoop;
-//        evLoop.processEvents();
-//    }
-//    emit stopWritingProcedure();
-    //queueWriterThread.quit();
-    //queueWriterThread.wait();
+    emit startQueueReaderThread(&framesQueue,deepNetworkManager);
 }
 
 void OpenCVManager::stopCapturingFrames()
@@ -144,7 +136,7 @@ void QueueWriter::writeToQueue(cv::VideoCapture *cap, FPSQueue<cv::Mat> *framesQ
     emit terminateThread();
 }
 
-void QueueReader::readFromQueue(FPSQueue<cv::Mat> *framesQueue)
+void QueueReader::readFromQueue(FPSQueue<cv::Mat> *framesQueue,QSharedPointer<DeepNeuralNetworManager> dnnManager)
 {
     qDebug() << "QueueReader thread id is: " << QThread::currentThreadId();
     cv::Mat frame;
@@ -153,8 +145,11 @@ void QueueReader::readFromQueue(FPSQueue<cv::Mat> *framesQueue)
         if(!framesQueue->isEmpty())
         {
             frame = framesQueue->get();
-            cv::imshow("Object detection with DNN",frame);
+
             framesQueue->clear();
+            dnnManager->preprocess(frame,cv::Size(frame.cols,frame.rows),1.0,cv::Scalar(),false);
+            cv::imshow("Object detection with DNN",frame);
+
         }
         //для того, чтобы не зависал пользовательский интерфейс, нужно обрабатывать возинкающие события
         QEventLoop evLoop;

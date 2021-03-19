@@ -1,10 +1,11 @@
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),
-      deepNeuralNetworkManager(new DeepNeuralNetworManager()),
-      openCVManager(new OpenCVManager(deepNeuralNetworkManager))
+    : QMainWindow(parent)
 {
+    deepNeuralNetworkManager.reset(new DeepNeuralNetworManager());
+    openCVManager.reset(new OpenCVManager());
+    openCVManager->setDeepNetworkManager(deepNeuralNetworkManager);
     createWidgets();
     createLayout();
     createConnections();

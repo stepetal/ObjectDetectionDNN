@@ -55,7 +55,7 @@ class QueueReader : public QueueWorker
 public:
     QueueReader() : QueueWorker() {}
 public slots:
-    void readFromQueue(FPSQueue<cv::Mat> *framesQueue);
+    void readFromQueue(FPSQueue<cv::Mat> *framesQueue, QSharedPointer<DeepNeuralNetworManager> dnnManager);
 };
 
 /*
@@ -76,8 +76,10 @@ class OpenCVManager : public QObject
 
     bool process; //true, если выполняется обработка очередного фрейма
 public:
-    OpenCVManager(QSharedPointer<DeepNeuralNetworManager> dnn);
+    OpenCVManager();
+    //OpenCVManager(QSharedPointer<DeepNeuralNetworManager> dnn);
     ~OpenCVManager();
+    void setDeepNetworkManager(QSharedPointer<DeepNeuralNetworManager> dnm){deepNetworkManager = dnm;}
     void createConnections();
     bool openVideoCaputureDevice(SYS::VideoInputEnum inputType,QString fileName = "",uint8_t numb = 0);
     void createOpenCVWindow();
@@ -90,7 +92,7 @@ public slots:
     void handleQueueReaderResult(const QString &result);
 signals:
     void startQueueWriterThread(cv::VideoCapture *cap, FPSQueue<cv::Mat> *framesQueue);
-    void startQueueReaderThread(FPSQueue<cv::Mat> *framesQueue);
+    void startQueueReaderThread(FPSQueue<cv::Mat> *framesQueue,QSharedPointer<DeepNeuralNetworManager> dnnManager);
     void stopWritingProcedure();
 };
 
