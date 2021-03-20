@@ -42,33 +42,42 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_imgproc450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_imgproc450d
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_core450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_core450d
 
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_calib3d450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_calib3d450d
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_videoio450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_videoio450d
 
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_core450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_core450d
-
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_highgui450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_highgui450d
-
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_features2d450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_features2d450d
-
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_imgcodecs450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_imgcodecs450d
-
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_dnn450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_dnn450d
-
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_videoio450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_videoio450d
-
-win32:CONFIG(release, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Release/ -lopencv_video450
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/OpenCV/opencv/lib/Debug/ -lopencv_video450d
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_calib3d450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_calib3d450d
 
 
-INCLUDEPATH += F:/OpenCV/opencv/include
-DEPENDPATH += F:/OpenCV/opencv/include
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_dnn450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_dnn450d
+
+
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_imgproc450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_imgproc450d
+
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_features2d450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_features2d450d
+
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_imgcodecs450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_imgcodecs450d
+
+
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_highgui450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_highgui450d
+
+win32:CONFIG(release, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Release/ -lopencv_video450
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/lib/Debug/ -lopencv_video450d
+
+
+INCLUDEPATH += D:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/install/include
+DEPENDPATH += D:/OpenCV/OpenCV_4_5_0/opencv/open_cv_build_msvc/install/include
+
+
+
+
+
+

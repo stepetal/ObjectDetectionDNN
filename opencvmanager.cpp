@@ -147,7 +147,7 @@ void QueueReader::readFromQueue(FPSQueue<cv::Mat> *framesQueue,QSharedPointer<De
             frame = framesQueue->get();
 
             framesQueue->clear();
-            dnnManager->preprocess(frame,cv::Size(frame.cols,frame.rows),1.0,cv::Scalar(),false);
+            dnnManager->processFrame(frame,cv::Size(frame.cols,frame.rows),1.0,cv::Scalar());
             cv::imshow("Object detection with DNN",frame);
 
         }
