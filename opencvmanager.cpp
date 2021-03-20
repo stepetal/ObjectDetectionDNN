@@ -147,8 +147,8 @@ void QueueReader::readFromQueue(FPSQueue<cv::Mat> *framesQueue,QSharedPointer<De
             frame = framesQueue->get();
 
             framesQueue->clear();
-            dnnManager->processFrame(frame,cv::Size(frame.cols,frame.rows),1.0,cv::Scalar());
-            cv::imshow("Object detection with DNN",frame);
+            dnnManager->processFrame(frame,cv::Size(416,416),1/255.0,cv::Scalar());
+            //cv::imshow("Object detection with DNN",frame);
 
         }
         //для того, чтобы не зависал пользовательский интерфейс, нужно обрабатывать возинкающие события

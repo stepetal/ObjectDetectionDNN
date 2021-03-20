@@ -22,6 +22,9 @@ void MainWindow::createLayout()
     QVBoxLayout *mainWindowLayout = new QVBoxLayout();
     QWidget *mainWindowWidget = new QWidget();
 
+    QGroupBox *modelInitializationGroupBox = new QGroupBox("Инициализация нейронной сети");
+    QGridLayout *modelInitializationGroupBoxLayout = new QGridLayout();
+
     QGroupBox *configFilePathGroupBox = new QGroupBox("Выбор конфигурационного файла");
     QHBoxLayout *configFileHBoxLayout = new QHBoxLayout();
     configFileHBoxLayout->addWidget(configFilePathLineEdit);
@@ -34,11 +37,26 @@ void MainWindow::createLayout()
     modelFileHBoxLayout->addWidget(chooseModelFilePushButton);
     modelFilePathGroupBox->setLayout(modelFileHBoxLayout);
 
+    QGroupBox *classesNamesGroupBox = new QGroupBox("Выбор файлов с именами классов модели");
+    QHBoxLayout *classesNamesGroupBoxLayout = new QHBoxLayout();
+    classesNamesGroupBoxLayout->addWidget(pathToFileWithClassesNamesLineEdit);
+    classesNamesGroupBoxLayout->addWidget(chooseFileWithClassesNamesPushButton);
+    classesNamesGroupBox->setLayout(classesNamesGroupBoxLayout);
+
     QGroupBox *chooseThresholdGroupBox = new QGroupBox("Выбор порогового уровня обнаружения");
     QHBoxLayout *thresholdLayout = new QHBoxLayout();
     thresholdLayout->addWidget(confidenceChoiceSpinBox);
     chooseThresholdGroupBox->setLayout(thresholdLayout);
 
+    modelInitializationGroupBoxLayout->addWidget(configFilePathGroupBox,0,0,1,1);
+    modelInitializationGroupBoxLayout->addWidget(modelFilePathGroupBox,1,0,1,1);
+    modelInitializationGroupBoxLayout->addWidget(classesNamesGroupBox,2,0,1,1);
+    modelInitializationGroupBoxLayout->addWidget(chooseThresholdGroupBox,3,0,1,1);
+    modelInitializationGroupBoxLayout->addWidget(initModelPushButton,4,0,1,1,Qt::AlignCenter);
+    modelInitializationGroupBox->setLayout(modelInitializationGroupBoxLayout);
+
+    QGroupBox *webVideoGroupBox = new QGroupBox("Выбор устройства захвата кадров");
+    QHBoxLayout *webVideoWidgetLayout = new QHBoxLayout();
 
     QHBoxLayout *webCamNumberLayout = new QHBoxLayout();
     QLabel *webCamNumberLabel = new QLabel("Номер устройства");
@@ -52,11 +70,16 @@ void MainWindow::createLayout()
     videoFileLayout->addWidget(openVideoFilePushButton);
     videoFileGroupBox->setLayout(videoFileLayout);
 
-    QWidget *webVideoWidget = new QWidget();
-    QHBoxLayout *webVideoWidgetLayout = new QHBoxLayout();
     webVideoWidgetLayout->addWidget(webCamGroupBox);
     webVideoWidgetLayout->addWidget(videoFileGroupBox);
-    webVideoWidget->setLayout(webVideoWidgetLayout);
+    webVideoGroupBox->setLayout(webVideoWidgetLayout);
+
+    QGroupBox *testOnImageGroupBox = new QGroupBox("Тест на изображении");
+    QGridLayout *testOnImageWidgetLayout = new QGridLayout();
+    testOnImageWidgetLayout->addWidget(testImageFilePathLineEdit,0,0,1,1);
+    testOnImageWidgetLayout->addWidget(openTestImagePushButton,0,1,1,1);
+    testOnImageWidgetLayout->addWidget(testModelOnImagePushButton,1,0,1,2,Qt::AlignCenter);
+    testOnImageGroupBox->setLayout(testOnImageWidgetLayout);
 
     QWidget *buttonWidget = new QWidget();
     QHBoxLayout *buttonWidgetLayout = new QHBoxLayout();
@@ -66,10 +89,9 @@ void MainWindow::createLayout()
     buttonWidgetLayout->addStretch();
     buttonWidget->setLayout(buttonWidgetLayout);
 
-    mainWindowLayout->addWidget(configFilePathGroupBox);
-    mainWindowLayout->addWidget(modelFilePathGroupBox);
-    mainWindowLayout->addWidget(chooseThresholdGroupBox);
-    mainWindowLayout->addWidget(webVideoWidget);
+    mainWindowLayout->addWidget(modelInitializationGroupBox);
+    mainWindowLayout->addWidget(webVideoGroupBox);
+    mainWindowLayout->addWidget(testOnImageGroupBox);
     mainWindowLayout->addWidget(buttonWidget);
 
     mainWindowWidget->setLayout(mainWindowLayout);
@@ -79,6 +101,30 @@ void MainWindow::createLayout()
 
 void MainWindow::createConnections()
 {
+    connect(chooseFileWithClassesNamesPushButton,&QPushButton::clicked,[&]()
+    {
+        auto filePath = QFileDialog::getOpenFileName(this,"Файл с именами классов","./","Text files: *.txt");
+        pathToFileWithClassesNamesLineEdit->setText(filePath);
+    });
+    connect(testModelOnImagePushButton,&QPushButton::clicked,[&]()
+    {
+        if(deepNeuralNetworkManager->networkIsValid() && !testImageFilePathLineEdit->text().isEmpty())
+        {
+            deepNeuralNetworkManager->testNetOnImage(testImageFilePathLineEdit->text());
+        }
+    });
+
+    connect(initModelPushButton,&QPushButton::clicked,[&]()
+    {
+        initNeuralNetwork();
+
+    });
+
+    connect(openTestImagePushButton,&QPushButton::clicked,[&](){
+        auto imagePath = QFileDialog::getOpenFileName(this,"Файл изображения","./","Image files: (*.jpg *.png)");
+        testImageFilePathLineEdit->setText(imagePath);
+    });
+
     connect(chooseConfigureFilePushButton,&QPushButton::clicked,[&]()
     {
         auto configFilePath = QFileDialog::getOpenFileName(this,"Файл конфигурации","./","Config files: (*.cfg)");
@@ -109,7 +155,7 @@ void MainWindow::createConnections()
 
     connect(startDetectionPushButton,&QPushButton::clicked,[&]()
     {
-        initNeuralNetwork();
+
         initCaptureDevice();
         openCVManager->createOpenCVWindow();
         openCVManager->processVideoFrames();
@@ -127,8 +173,12 @@ void MainWindow::createWidgets()
     chooseConfigureFilePushButton = new QPushButton("Выбрать");
     chooseModelFilePushButton = new QPushButton("Выбрать");
     openVideoFilePushButton = new QPushButton("Открыть");
+    chooseFileWithClassesNamesPushButton = new QPushButton("Открыть");
     startDetectionPushButton = new QPushButton("Начать обнаружение");
     stopDetectionPushButton = new QPushButton("Прекратить обнаружение");
+    initModelPushButton = new QPushButton("Инициализировать");
+    testModelOnImagePushButton = new QPushButton("Провести тест");
+    openTestImagePushButton = new QPushButton("Открыть");
     modelFilePathLineEdit = new QLineEdit();
     modelFilePathLineEdit->setReadOnly(true);
     modelFilePathLineEdit->setPlaceholderText("Путь к файлу с параметрами модели");
@@ -136,8 +186,10 @@ void MainWindow::createWidgets()
     configFilePathLineEdit->setPlaceholderText("Путь к конфигурационному файлу");
     configFilePathLineEdit->setReadOnly(true);
     confidenceChoiceSpinBox = new QDoubleSpinBox();
+    confidenceChoiceSpinBox->setValue(0.25);
+    confidenceChoiceSpinBox->setSingleStep(0.05);
     confidenceChoiceSpinBox->setMinimum(0);
-    confidenceChoiceSpinBox->setMinimum(1);
+    confidenceChoiceSpinBox->setMaximum(1);
     webCamGroupBox = new QGroupBox("Web-камера");
     webCamGroupBox->setCheckable(true);
     webCamGroupBox->setChecked(false);
@@ -149,13 +201,21 @@ void MainWindow::createWidgets()
     videoFileGroupBox->setChecked(true);
     videoFilePathLineEdit = new QLineEdit();
     videoFilePathLineEdit->setPlaceholderText("Путь к видеофайлу");
+    testImageFilePathLineEdit = new QLineEdit();
+    testImageFilePathLineEdit->setReadOnly(true);
+    testImageFilePathLineEdit->setPlaceholderText("Путь к тестовому изображению");
+    pathToFileWithClassesNamesLineEdit = new QLineEdit();
+    pathToFileWithClassesNamesLineEdit->setReadOnly(true);
+    pathToFileWithClassesNamesLineEdit->setPlaceholderText("Путь к файлу с именами классов объектов");
 }
 
 void MainWindow::initNeuralNetwork()
 {
-    if(!modelFilePathLineEdit->text().isEmpty() && !configFilePathLineEdit->text().isEmpty())
+    if(!modelFilePathLineEdit->text().isEmpty() && !configFilePathLineEdit->text().isEmpty() && !pathToFileWithClassesNamesLineEdit->text().isEmpty())
     {
         deepNeuralNetworkManager->loadNet(modelFilePathLineEdit->text(),configFilePathLineEdit->text());
+        deepNeuralNetworkManager->setThreshold(confidenceChoiceSpinBox->value());
+        deepNeuralNetworkManager->readFileWithClassesNames(pathToFileWithClassesNamesLineEdit->text());
     }
 }
 

@@ -27,12 +27,18 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     QPushButton *startDetectionPushButton;
     QPushButton *stopDetectionPushButton;
+    QPushButton *initModelPushButton;
+    QPushButton *testModelOnImagePushButton;
     QPushButton *chooseModelFilePushButton;
     QPushButton *chooseConfigureFilePushButton;
+    QPushButton *chooseFileWithClassesNamesPushButton;
     QPushButton *openVideoFilePushButton;
+    QPushButton *openTestImagePushButton;
     QLineEdit *modelFilePathLineEdit;
     QLineEdit *configFilePathLineEdit;
     QLineEdit *videoFilePathLineEdit;
+    QLineEdit *testImageFilePathLineEdit;
+    QLineEdit *pathToFileWithClassesNamesLineEdit;
     QDoubleSpinBox *confidenceChoiceSpinBox;
     QSpinBox *webCamNumberSpinBox;
 

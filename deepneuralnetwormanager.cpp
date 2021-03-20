@@ -3,7 +3,7 @@
 #include <opencv2/highgui.hpp>
 
 
-DeepNeuralNetworManager::DeepNeuralNetworManager() : threshold(0.7)
+DeepNeuralNetworManager::DeepNeuralNetworManager() : threshold(0.25)
 {
 }
 
@@ -14,7 +14,37 @@ void DeepNeuralNetworManager::loadNet(QString modelPath, QString configPath)
     //net = cv::dnn::readNetFromTensorflow("G:/Stepanov/Projects/ComputerVision/ObjectDetectionProject/ObjectDetectionProject/opencv_face_detector_uint8.pb",
     //                                     "G:/Stepanov/Projects/ComputerVision/ObjectDetectionProject/ObjectDetectionProject/opencv_face_detector.pbtxt");
     unconnectedOutLayersNames = net.getUnconnectedOutLayersNames();
+
     qDebug() << "Network has been loaded";
+}
+
+void DeepNeuralNetworManager::testNetOnImage(QString imagePath)
+{
+    cv::Mat frame = cv::imread(imagePath.toStdString(),cv::IMREAD_COLOR);
+    if(!frame.empty())
+    {
+        //cv::resize(frame,frame,cv::Size(416,416));
+        //cv::imshow("Image after resize",frame);
+        processFrame(frame,cv::Size(416,416),1/255.0,cv::Scalar());
+        cv::imshow("Image",frame);
+    }
+}
+
+void DeepNeuralNetworManager::readFileWithClassesNames(QString filePath)
+{
+    QFile fileWithClassesNames(filePath);
+    if(fileWithClassesNames.open(QFile::ReadOnly))
+    {
+        QTextStream textStream(&fileWithClassesNames);
+        while(!textStream.atEnd())
+        {
+            auto curLine = textStream.readLine();
+            if(!curLine.isEmpty())
+            {
+                classes.append(curLine);
+            }
+        }
+    }
 }
 
 void DeepNeuralNetworManager::preprocess(cv::Mat &frame,
@@ -34,9 +64,9 @@ void DeepNeuralNetworManager::preprocess(cv::Mat &frame,
     {
         in_size.height = frame.rows;
     }
-    cv::dnn::blobFromImage(frame,blob,1.0,in_size,cv::Scalar(),false,false,CV_8U);
+    cv::dnn::blobFromImage(frame,blob,scale,in_size,cv::Scalar(),true,false);
 
-    net.setInput(blob,"",scale,mean);
+    net.setInput(blob);
 
     if(net.getLayer(0)->outputNameToIndex("im_info") != -1)
     {
@@ -138,11 +168,11 @@ void DeepNeuralNetworManager::drawPredictions(int classId, float conf, int left,
     cv::rectangle(frame, cv::Point(left, top), cv::Point(right, bottom), cv::Scalar(0, 255, 0));
 
     std::string label = cv::format("%.2f", conf);
-//    if (!classes.empty())
-//    {
-//        CV_Assert(classId < (int)classes.size());
-//        label = classes[classId] + ": " + label;
-//    }
+    if (!classes.isEmpty())
+    {
+        CV_Assert(classId < (int)classes.length());
+        label = classes.at(classId).toStdString() + ": " + label;
+    }
 
     int baseLine;
     cv::Size labelSize = getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
@@ -150,7 +180,7 @@ void DeepNeuralNetworManager::drawPredictions(int classId, float conf, int left,
     top = cv::max(top, labelSize.height);
     cv::rectangle(frame, cv::Point(left, top - labelSize.height),
               cv::Point(left + labelSize.width, top + baseLine), cv::Scalar::all(255), cv::FILLED);
-    //putText(frame, label, Point(left, top), FONT_HERSHEY_SIMPLEX, 0.5, Scalar());
+    putText(frame, label, cv::Point(left, top), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar());
 }
 
 void DeepNeuralNetworManager::processFrame(cv::Mat &frame, cv::Size in_size, float scale, const cv::Scalar &mean)
