@@ -94,6 +94,7 @@ signals:
     void startQueueWriterThread(cv::VideoCapture *cap, FPSQueue<cv::Mat> *framesQueue);
     void startQueueReaderThread(FPSQueue<cv::Mat> *framesQueue,QSharedPointer<DeepNeuralNetworManager> dnnManager);
     void stopWritingProcedure();
+    void lockMainWindow(bool enable);
 };
 
 

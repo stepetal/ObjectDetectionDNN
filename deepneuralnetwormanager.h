@@ -8,6 +8,7 @@
 #include <QVector>
 #include <QSharedPointer>
 #include <opencv2/dnn.hpp>
+#include <fpsqueue.h>
 
 
 
@@ -24,6 +25,7 @@ class DeepNeuralNetworManager : public QObject
     float threshold;
     cv::Mat image;
     QList<QString> classes;
+    FPSQueue<cv::Mat> predictionsQueue;//содержит фреймы с метками классов, границами и вероятностью обнаружения
 public:
     DeepNeuralNetworManager();
     void setThreshold(float thrsh) {threshold = thrsh;}
@@ -33,6 +35,9 @@ public:
     void testNetOnImage(QString imagePath);
     bool networkIsValid(){ return !net.empty();}
     void readFileWithClassesNames(QString filePath);
+    cv::Mat getPredictedFrame(){return predictionsQueue.get();}
+    unsigned int getNumberOfPredictedFrames(){return predictionsQueue.counter;}
+    float getPredictionsFPS(){return predictionsQueue.getFPS();}
 protected:
     void preprocess(cv::Mat &frame, cv::Size in_size, float scale, const cv::Scalar& mean);
     void postprocess(cv::Mat& frame, const std::vector<cv::Mat>& outs);

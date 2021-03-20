@@ -32,6 +32,10 @@ void DeepNeuralNetworManager::testNetOnImage(QString imagePath)
 
 void DeepNeuralNetworManager::readFileWithClassesNames(QString filePath)
 {
+    if(!classes.isEmpty())
+    {
+        classes.clear();
+    }
     QFile fileWithClassesNames(filePath);
     if(fileWithClassesNames.open(QFile::ReadOnly))
     {
@@ -180,7 +184,7 @@ void DeepNeuralNetworManager::drawPredictions(int classId, float conf, int left,
     top = cv::max(top, labelSize.height);
     cv::rectangle(frame, cv::Point(left, top - labelSize.height),
               cv::Point(left + labelSize.width, top + baseLine), cv::Scalar::all(255), cv::FILLED);
-    putText(frame, label, cv::Point(left, top), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar());
+    cv::putText(frame, label, cv::Point(left, top), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar());
 }
 
 void DeepNeuralNetworManager::processFrame(cv::Mat &frame, cv::Size in_size, float scale, const cv::Scalar &mean)
@@ -189,6 +193,16 @@ void DeepNeuralNetworManager::processFrame(cv::Mat &frame, cv::Size in_size, flo
     std::vector<cv::Mat> outs;
     net.forward(outs,unconnectedOutLayersNames);
     postprocess(frame,outs);
+
+    std::string label = "Press 'q' for exit";
+    int baseLine;
+    cv::Size labelSize = getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
+    auto top = cv::max(0, labelSize.height);
+    cv::rectangle(frame, cv::Point(0, top - labelSize.height),
+              cv::Point(0 + labelSize.width, top + baseLine), cv::Scalar::all(255), cv::FILLED);
+    cv::putText(frame,label,cv::Point(0,top),cv::FONT_HERSHEY_SIMPLEX,0.5,cv::Scalar());
+
+    predictionsQueue.push(frame);
 }
 
 

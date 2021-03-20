@@ -166,6 +166,10 @@ void MainWindow::createConnections()
         openCVManager->stopCapturingFrames();
     });
 
+    connect(openCVManager.data(),&OpenCVManager::lockMainWindow,[&](bool enabled)
+    {
+        this->setEnabled(enabled);
+    });
 }
 
 void MainWindow::createWidgets()
